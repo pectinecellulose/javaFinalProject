@@ -1,4 +1,4 @@
-// Basé sur Exemplaires.java (groupe) — renommé en Exemplaire, adapté pour le Main
+
 public class Exemplaire {
     public enum Etat { BON, ABIME, PERDU }
 
