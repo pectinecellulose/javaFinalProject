@@ -22,7 +22,7 @@ public class DatabaseManager {
     }
 
     public void initialiserSchema() {
-        // En production : CREATE TABLE IF NOT EXISTS ...
+        
     }
 
     public void sauvegarder(Object obj) {
@@ -38,7 +38,7 @@ public class DatabaseManager {
     }
 
     public void mettreAJour(Object obj) {
-        // En mémoire, l'objet est déjà modifié par référence.
+        
     }
 
     @SuppressWarnings("unchecked")
