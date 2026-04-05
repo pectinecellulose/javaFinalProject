@@ -1,4 +1,4 @@
-// Basé sur Livres.java (groupe) — renommé en Livre pour correspondre au Main
+// Basé sur Livres.java
 public class Livre {
     private String idLivre;
     private String titre;
