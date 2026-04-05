@@ -65,88 +65,85 @@ public class Main {
         try {
             Statement stmt = connection.createStatement();
             
-            // Supprimer toutes les tables existantes
-            stmt.executeUpdate("DROP TABLE IF EXISTS actions");
-            stmt.executeUpdate("DROP TABLE IF EXISTS equipements");
-            stmt.executeUpdate("DROP TABLE IF EXISTS zones_conservation");
-            stmt.executeUpdate("DROP TABLE IF EXISTS annexes");
-            
-            // Recréer les tables avec la structure correcte
-            String sqlAnnexes = "CREATE TABLE annexes (" +
-                               "id INT PRIMARY KEY, " +
-                               "nom VARCHAR(255) NOT NULL, " +
-                               "adresse VARCHAR(255) NOT NULL, " +
-                               "capacite_max INT NOT NULL, " +
-                               "nombre_livres INT DEFAULT 0, " +
-                               "est_ouverte BOOLEAN DEFAULT TRUE, " +
-                               "date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                               ")";
-            stmt.executeUpdate(sqlAnnexes);
-            
-            // Table des équipements
-            String sqlEquipements = "CREATE TABLE equipements (" +
-                                   "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                                   "id_annexe INT NOT NULL, " +
-                                   "nom_equipement VARCHAR(255) NOT NULL, " +
-                                   "date_ajout TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                                   "FOREIGN KEY (id_annexe) REFERENCES annexes(id)" +
+            // Vérifier si les tables existent
+            ResultSet rs = stmt.executeQuery("SHOW TABLES LIKE 'annexes'");
+            if (!rs.next()) {
+                System.out.println("Creation des tables de la base de donnees...");
+                
+                // Créer les tables avec la structure correcte
+                String sqlAnnexes = "CREATE TABLE annexes (" +
+                                   "id INT PRIMARY KEY, " +
+                                   "nom VARCHAR(255) NOT NULL, " +
+                                   "adresse VARCHAR(255) NOT NULL, " +
+                                   "capacite_max INT NOT NULL, " +
+                                   "nombre_livres INT DEFAULT 0, " +
+                                   "est_ouverte BOOLEAN DEFAULT TRUE, " +
+                                   "date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                                    ")";
-            stmt.executeUpdate(sqlEquipements);
-            
-            // Table des actions (journal)
-            String sqlActions = "CREATE TABLE actions (" +
-                               "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                               "type_action VARCHAR(100) NOT NULL, " +
-                               "description TEXT NOT NULL, " +
-                               "id_annexe INT, " +
-                               "date_action TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                               "FOREIGN KEY (id_annexe) REFERENCES annexes(id) ON DELETE SET NULL" +
-                               ")";
-            stmt.executeUpdate(sqlActions);
-            
-            // Table des zones de conservation
-            String sqlZones = "CREATE TABLE zones_conservation (" +
-                             "id INT PRIMARY KEY, " +
-                             "nom_zone VARCHAR(255) NOT NULL, " +
-                             "temperature DECIMAL(5,2) NOT NULL, " +
-                             "humidite DECIMAL(5,2) NOT NULL, " +
-                             "luminosite DECIMAL(10,2) NOT NULL, " +
-                             "qualite_air VARCHAR(50) NOT NULL, " +
-                             "dernier_controle TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                             "est_conforme BOOLEAN DEFAULT FALSE, " +
-                             "observations TEXT" +
-                             ")";
-            stmt.executeUpdate(sqlZones);
-            
-            // Insérer les données de test
-            stmt.executeUpdate("INSERT INTO annexes (id, nom, adresse, capacite_max, nombre_livres, est_ouverte) VALUES " +
-                           "(1, 'Bibliotheque Centrale', '15 Rue de la Republique, 75001 Paris', 50000, 35000, TRUE), " +
-                           "(2, 'Annexe Nord', '45 Avenue des Champs-Elysees, 75008 Paris', 15000, 12000, TRUE), " +
-                           "(3, 'Mediatheque Jeunesse', '8 Rue des Ecoles, 75005 Paris', 8000, 6000, TRUE) " +
-                           "ON DUPLICATE KEY UPDATE nom=VALUES(nom), adresse=VALUES(adresse), capacite_max=VALUES(capacite_max)");
-            
-            stmt.executeUpdate("INSERT INTO equipements (id_annexe, nom_equipement) VALUES " +
-                           "(1, 'Climatisation centrale'), " +
-                           "(1, 'Systeme anti-incendie'), " +
-                           "(1, 'Cameras de surveillance'), " +
-                           "(2, 'Climatisation'), " +
-                           "(2, 'Detecteurs de fumee'), " +
-                           "(3, 'Climatisation'), " +
-                           "(3, 'Espace multimedia'), " +
-                           "(3, 'Salle d''animation') " +
-                           "ON DUPLICATE KEY UPDATE nom_equipement=VALUES(nom_equipement)");
-            
-            stmt.executeUpdate("INSERT INTO zones_conservation (id, nom_zone, temperature, humidite, luminosite, qualite_air) VALUES " +
-                           "(1, 'Zone Collections Rares', 19.5, 48.0, 250.0, 'Excellente'), " +
-                           "(2, 'Zone Adultes', 21.0, 52.0, 400.0, 'Bonne'), " +
-                           "(3, 'Zone Souterrain', 25.5, 68.0, 1200.0, 'Moyenne') " +
-                           "ON DUPLICATE KEY UPDATE nom_zone=VALUES(nom_zone)");
-            
+                stmt.executeUpdate(sqlAnnexes);
+                
+                String sqlEquipements = "CREATE TABLE equipements (" +
+                                       "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                                       "id_annexe INT NOT NULL, " +
+                                       "nom_equipement VARCHAR(255) NOT NULL, " +
+                                       "date_ajout TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                                       "FOREIGN KEY (id_annexe) REFERENCES annexes(id)" +
+                                       ")";
+                stmt.executeUpdate(sqlEquipements);
+                
+                String sqlActions = "CREATE TABLE actions (" +
+                                   "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                                   "type_action VARCHAR(100) NOT NULL, " +
+                                   "description TEXT NOT NULL, " +
+                                   "id_annexe INT, " +
+                                   "date_action TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                                   "FOREIGN KEY (id_annexe) REFERENCES annexes(id) ON DELETE SET NULL" +
+                                   ")";
+                stmt.executeUpdate(sqlActions);
+                
+                String sqlZones = "CREATE TABLE zones_conservation (" +
+                                 "id INT PRIMARY KEY, " +
+                                 "nom_zone VARCHAR(255) NOT NULL, " +
+                                 "temperature DECIMAL(5,2) NOT NULL, " +
+                                 "humidite DECIMAL(5,2) NOT NULL, " +
+                                 "luminosite DECIMAL(10,2) NOT NULL, " +
+                                 "qualite_air VARCHAR(50) NOT NULL, " +
+                                 "dernier_controle TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                                 "est_conforme BOOLEAN DEFAULT FALSE, " +
+                                 "observations TEXT" +
+                                 ")";
+                stmt.executeUpdate(sqlZones);
+                
+                // Insérer les données de test
+                stmt.executeUpdate("INSERT INTO annexes (id, nom, adresse, capacite_max, nombre_livres, est_ouverte) VALUES " +
+                               "(1, 'Bibliotheque Centrale', '15 Rue de la Republique, 75001 Paris', 50000, 35000, TRUE), " +
+                               "(2, 'Annexe Nord', '45 Avenue des Champs-Elysees, 75008 Paris', 15000, 12000, TRUE), " +
+                               "(3, 'Mediatheque Jeunesse', '8 Rue des Ecoles, 75005 Paris', 8000, 6000, TRUE)");
+                
+                stmt.executeUpdate("INSERT INTO equipements (id_annexe, nom_equipement) VALUES " +
+                               "(1, 'Climatisation centrale'), " +
+                               "(1, 'Systeme anti-incendie'), " +
+                               "(1, 'Cameras de surveillance'), " +
+                               "(2, 'Climatisation'), " +
+                               "(2, 'Detecteurs de fumee'), " +
+                               "(3, 'Climatisation'), " +
+                               "(3, 'Espace multimedia'), " +
+                               "(3, 'Salle d''animation')");
+                
+                stmt.executeUpdate("INSERT INTO zones_conservation (id, nom_zone, temperature, humidite, luminosite, qualite_air) VALUES " +
+                               "(1, 'Zone Collections Rares', 19.5, 48.0, 250.0, 'Excellente'), " +
+                               "(2, 'Zone Adultes', 21.0, 52.0, 400.0, 'Bonne'), " +
+                               "(3, 'Zone Souterrain', 25.5, 68.0, 1200.0, 'Moyenne')");
+                
+                System.out.println("Tables et donnees de test crees avec succes.");
+            } else {
+                System.out.println("Tables existantes trouvees. Utilisation de la base de donnees actuelle.");
+            }
+            rs.close();
             stmt.close();
-            System.out.println("Tables de la base de donnees recrées avec succès.");
             
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la création des tables: " + e.getMessage());
+            System.err.println("Erreur lors de la verification des tables: " + e.getMessage());
         }
     }
     
