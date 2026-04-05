@@ -90,13 +90,6 @@ public class DatabaseConfig {
      * Affiche la configuration actuelle (sans afficher le mot de passe)
      */
     public static void displayConfig() {
-        System.out.println("Configuration de la base de donnees:");
-        System.out.println("  Hote: " + getDbHost());
-        System.out.println("  Port: " + getDbPort());
-        System.out.println("  Base: " + getDbName());
-        System.out.println("  Utilisateur: " + getDbUser());
-        System.out.println("  Mot de passe: " + (getDbPassword().isEmpty() ? "(vide)" : "***"));
-        System.out.println("  Driver: " + getMysqlDriver());
-        System.out.println("  URL: " + getJdbcUrl());
+        
     }
 }
