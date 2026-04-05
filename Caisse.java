@@ -1,4 +1,4 @@
-// Basé sur Caisse.java (groupe) — JDBC retiré, méthodes requises par le Main ajoutées
+// Basé sur Caisse.java 
 public class Caisse {
     private static Caisse instance;
     private double solde              = 0.0;
@@ -12,7 +12,7 @@ public class Caisse {
         return instance;
     }
 
-    // Méthode principale appelée par le Main
+    // Méthode principale 
     public void encaisserAmende(Amende amende) throws AmendeDejaPaYeeException {
         if (amende == null)    throw new IllegalArgumentException("Amende invalide.");
         if (amende.estPayee()) throw new AmendeDejaPaYeeException(
