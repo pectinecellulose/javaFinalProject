@@ -1,4 +1,4 @@
-// Basé sur Membres.java (groupe) — renommé en Membre, adapté pour le Main
+// Basé sur Membres.java
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
