@@ -23,7 +23,7 @@ public class Livraison {
         this.date          = (date != null) ? date : LocalDate.now();
     }
 
-    // Déplace l'exemplaire vers l'annexe d'arrivée
+    // Déplace l'exemplaire
     public void effectuer() { exemplaire.setLocalisation(annexeArrivee); }
 
     public int        getId()            { return id; }
