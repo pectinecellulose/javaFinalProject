@@ -1,4 +1,3 @@
-// Basé sur Emprunt.java (groupe) — adapté : utilise Membre/Exemplaire, accepte une date
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
