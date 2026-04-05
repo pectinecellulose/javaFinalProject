@@ -1,4 +1,3 @@
-// Basé sur Vehicule-2.java (groupe) — constructeur adapté pour le Main (2 args)
 import java.util.Objects;
 
 public class Vehicule {
@@ -8,7 +7,7 @@ public class Vehicule {
     private String modele;
     private boolean disponible;
 
-    // Constructeur utilisé par le Main : Vehicule("DK-1247-AB", "Renault Master 2022")
+    // Constructeur utilisé par le Main
     public Vehicule(String immatriculation, String modele) {
         this.id = ++compteur;
         setImmatriculation(immatriculation);
@@ -16,7 +15,7 @@ public class Vehicule {
         this.disponible = true;
     }
 
-    // Constructeur étendu conservé (compatibilité)
+    // Constructeur étendu 
     public Vehicule(int id, String immatriculation, String modele) {
         this.id = id;
         setImmatriculation(immatriculation);
