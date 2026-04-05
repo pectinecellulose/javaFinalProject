@@ -2,23 +2,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/**
- * SYSTÈME DE GESTION — BIBLIOTHÈQUE MUNICIPALE
- * Classe Main — Simulation d'un scénario réaliste complet
- *
- * SCÉNARIO SIMULÉ (10 étapes) :
- *  0. Initialisation de la base de données
- *  1. Création des annexes
- *  2. Ajout de livres au catalogue
- *  3. Ajout d'exemplaires au stock
- *  4. Enregistrement de membres
- *  5. Emprunt de livres + tentative invalide (exception)
- *  6. Retour en retard → génération automatique d'une amende
- *  7. Paiement de l'amende → mise à jour de la caisse
- *  8. Livraison inter-annexes par véhicule
- *  9. Relevé et surveillance des conditions de conservation
- * 10. Rapport final — état global du système
- */
+//  Main
 public class Main {
 
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -28,9 +12,9 @@ public class Main {
         banner("SYSTÈME DE GESTION — BIBLIOTHÈQUE MUNICIPALE",
                "Simulation d'un scénario d'utilisation réaliste et complet");
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 0 — Initialisation de la base de données
-        // ══════════════════════════════════════════════════
+
+        //Initialisation de la base de données
+     
         section("ÉTAPE 0 — Connexion & initialisation de la base de données");
 
         DatabaseManager db = DatabaseManager.getInstance();
@@ -41,9 +25,9 @@ public class Main {
         System.out.println("                  annexes, capteurs_conditions.");
         etatBD(db);
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 1 — Création des annexes
-        // ══════════════════════════════════════════════════
+
+        //Création des annexes
+
         section("ÉTAPE 1 — Création des annexes");
 
         Annexe annexeCentrale = new Annexe("Bibliothèque Centrale", "1 Place de la République");
@@ -59,9 +43,9 @@ public class Main {
         System.out.println("  ✔ " + annexeSud);
         etatBD(db);
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 2 — Ajout de livres au catalogue
-        // ══════════════════════════════════════════════════
+     
+        //Ajout de livres au catalogue
+        
         section("ÉTAPE 2 — Ajout de livres au catalogue");
 
         Livre livre1 = new Livre("978-2-07-036822-8", "Le Petit Prince",  "Antoine de Saint-Exupéry", "Conte",           1943);
@@ -80,9 +64,10 @@ public class Main {
         System.out.println("  ✔ " + livre4);
         afficherCatalogue(db);
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 3 — Ajout d'exemplaires au stock
-        // ══════════════════════════════════════════════════
+        
+        
+        //Ajout d'exemplaires au stock
+
         section("ÉTAPE 3 — Ajout d'exemplaires au stock");
 
         Stock stock = Stock.getInstance();
@@ -101,10 +86,10 @@ public class Main {
 
         System.out.println("  ✔ " + stock.getNombreExemplaires() + " exemplaires ajoutés.");
         afficherStock(stock);
+        
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 4 — Enregistrement des membres
-        // ══════════════════════════════════════════════════
+        //Enregistrement des membres
+
         section("ÉTAPE 4 — Enregistrement des membres");
 
         Membre aminata  = new Membre("Diallo",  "Aminata",  "aminata.diallo@email.sn",  "+221 77 123 4567");
@@ -120,9 +105,9 @@ public class Main {
         System.out.println("  ✔ " + fatou);
         afficherMembres(db);
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 5a — Emprunt normal (Aminata)
-        // ══════════════════════════════════════════════════
+       
+        //Emprunt normal (Aminata)
+       
         section("ÉTAPE 5a — Emprunt normal (Aminata emprunte « Le Petit Prince »)");
 
         LocalDate dateEmprunt1    = LocalDate.now().minusDays(20);
@@ -142,9 +127,9 @@ public class Main {
             System.err.println("  ✘ Erreur inattendue : " + e.getMessage());
         }
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 5b — Second emprunt normal (Ibrahima)
-        // ══════════════════════════════════════════════════
+        
+        //Second emprunt normal (Ibrahima)
+        
         section("ÉTAPE 5b — Second emprunt normal (Ibrahima emprunte « L'Étranger »)");
 
         LocalDate dateEmprunt2 = LocalDate.now().minusDays(5);
@@ -157,9 +142,10 @@ public class Main {
             System.err.println("  ✘ " + e.getMessage());
         }
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 5c — Tentative invalide (EN_REPARATION)
-        // ══════════════════════════════════════════════════
+    
+        
+        //Tentative invalide (EN_REPARATION)
+        
         section("ÉTAPE 5c — Tentative d'emprunt invalide (exemplaire EN_REPARATION)");
 
         try {
@@ -173,9 +159,11 @@ public class Main {
         afficherStock(stock);
         afficherEmpruntsEnCours(db);
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 6 — Retour en retard → amende
-        // ══════════════════════════════════════════════════
+
+        
+        
+        //Retour en retard → amende
+           
         section("ÉTAPE 6 — Retour du livre en retard (Aminata)");
 
         LocalDate dateRetourReelle = LocalDate.now();
@@ -205,9 +193,11 @@ public class Main {
         afficherStock(stock);
         afficherEmpruntsEnCours(db);
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 7 — Paiement de l'amende
-        // ══════════════════════════════════════════════════
+
+
+        
+        //Paiement de l'amende
+        
         if (amende != null) {
             section("ÉTAPE 7 — Paiement de l'amende par Aminata");
             try {
@@ -229,9 +219,9 @@ public class Main {
             afficherCaisse(caisse);
         }
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 8 — Livraison inter-annexes
-        // ══════════════════════════════════════════════════
+      
+        //Livraison inter-annexes
+      
         section("ÉTAPE 8 — Livraison inter-annexes");
 
         Vehicule vehicule = new Vehicule("DK-1247-AB", "Renault Master 2022");
@@ -253,9 +243,9 @@ public class Main {
 
         afficherStock(stock);
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 9 — Conditions de conservation
-        // ══════════════════════════════════════════════════
+     
+        //Conditions de conservation
+       
         section("ÉTAPE 9 — Surveillance des conditions de conservation");
 
         SenseurCondition sc1 = new SenseurCondition("Température", 21.0, "°C",  "Salle A",  annexeCentrale);
@@ -269,9 +259,9 @@ public class Main {
             afficherCondition(sc);
         }
 
-        // ══════════════════════════════════════════════════
-        // ÉTAPE 10 — Rapport final
-        // ══════════════════════════════════════════════════
+       
+        //Rapport final
+
         section("ÉTAPE 10 — RAPPORT FINAL : État global du système");
         afficherRapportFinal(db, stock, caisse);
 
@@ -282,10 +272,9 @@ public class Main {
         db.fermerConnexion();
     }
 
-    // ══════════════════════════════════════════════════
-    // MÉTHODES D'AFFICHAGE
-    // ══════════════════════════════════════════════════
-
+  
+    //AFFICHAGE
+  
     private static void banner(String ligne1, String ligne2) {
         String bord = "═".repeat(66);
         System.out.println("\n╔" + bord + "╗");
