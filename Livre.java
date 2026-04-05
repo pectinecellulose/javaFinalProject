@@ -1,4 +1,3 @@
-// Basé sur Livres.java
 public class Livre {
     private String idLivre;
     private String titre;
