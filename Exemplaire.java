@@ -46,7 +46,7 @@ public class Exemplaire {
     public Etat           getEtatConservation(){ return etatConservation; }
     public Annexe         getLocalisation()    { return localisation; }
 
-    // Setters (utilisés par Stock)
+    // Setters
     public void setEtat(EtatExemplaire etat)          { this.etat = etat; }
     public void setLocalisation(Annexe localisation)  { this.localisation = localisation; }
 
