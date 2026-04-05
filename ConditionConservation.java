@@ -1,6 +1,7 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+import java.sql.*;
 
 public class ConditionConservation {
     private int id;
@@ -12,6 +13,7 @@ public class ConditionConservation {
     private LocalDateTime dernierControle;
     private boolean estConforme;
     private String observations;
+    private static Connection connection;
     
     private static final double TEMP_MIN = 16.0;
     private static final double TEMP_MAX = 24.0;
@@ -121,6 +123,33 @@ public class ConditionConservation {
         this.dernierControle = LocalDateTime.now();
     }
     
+    // Méthode pour définir la connexion à la base de données
+    public static void setConnection(Connection conn) {
+        connection = conn;
+    }
+    
+    // Méthode pour logger les actions
+    private static void loggerAction(String typeAction, String description, Integer idAnnexe) {
+        if (connection == null) return;
+        
+        try {
+            String sql = "INSERT INTO actions (type_action, description, id_annexe) VALUES (?, ?, ?)";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, typeAction);
+            pstmt.setString(2, description);
+            if (idAnnexe != null) {
+                pstmt.setInt(3, idAnnexe);
+            } else {
+                pstmt.setNull(3, Types.INTEGER);
+            }
+            pstmt.executeUpdate();
+            pstmt.close();
+            
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du logging de l'action: " + e.getMessage());
+        }
+    }
+    
     public void effectuerControle() {
         verifierConformite();
         System.out.println("Contrôle effectué pour la zone \"" + nomZone + "\"");
@@ -128,6 +157,7 @@ public class ConditionConservation {
         if (!estConforme) {
             System.out.println("Observations : " + observations);
         }
+        loggerAction("CONTROLE_ZONE", "Contrôle de la zone '" + nomZone + "' - " + (estConforme ? "CONFORME" : "NON CONFORME"), null);
     }
     
     public String getNiveauRisque() {
@@ -206,9 +236,14 @@ public class ConditionConservation {
         Scanner scanner = new Scanner(System.in);
         ConditionConservation condition = creerExemple();
         
+        // Définir la connexion pour cette classe
+        if (Main.getConnection() != null) {
+            setConnection(Main.getConnection());
+        }
+        
         while (true) {
             System.out.println("\n" + "=".repeat(60));
-            System.out.println("🌡️  MENU CONDITIONS DE CONSERVATION");
+            System.out.println("MENU CONDITIONS DE CONSERVATION");
             System.out.println("=".repeat(60));
             System.out.println("1. Afficher les conditions actuelles");
             System.out.println("2. Modifier la température");

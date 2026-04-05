@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.sql.*;
 
 public class Annexe {
     private int id;
@@ -10,6 +11,7 @@ public class Annexe {
     private int nombreLivresActuels;
     private boolean estOuverte;
     private List<String> equipements;
+    private static Connection connection;
     
     public Annexe(int id, String nom, String adresse, int capaciteMax) {
         if (id <= 0) {
@@ -68,15 +70,58 @@ public class Annexe {
         this.capaciteMax = capaciteMax;
     }
     
+    public void setNombreLivresActuels(int nombreLivresActuels) {
+        if (nombreLivresActuels < 0) {
+            throw new IllegalArgumentException("Le nombre de livres ne peut pas être négatif");
+        }
+        if (nombreLivresActuels > capaciteMax) {
+            throw new IllegalArgumentException("Le nombre de livres ne peut pas dépasser la capacité maximale");
+        }
+        this.nombreLivresActuels = nombreLivresActuels;
+    }
+    
+    public void setEstOuverte(boolean estOuverte) {
+        this.estOuverte = estOuverte;
+    }
+    
+    // Méthode pour définir la connexion à la base de données
+    public static void setConnection(Connection conn) {
+        connection = conn;
+    }
+    
+    // Méthode pour logger les actions
+    private static void loggerAction(String typeAction, String description, Integer idAnnexe) {
+        if (connection == null) return;
+        
+        try {
+            String sql = "INSERT INTO actions (type_action, description, id_annexe) VALUES (?, ?, ?)";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, typeAction);
+            pstmt.setString(2, description);
+            if (idAnnexe != null) {
+                pstmt.setInt(3, idAnnexe);
+            } else {
+                pstmt.setNull(3, Types.INTEGER);
+            }
+            pstmt.executeUpdate();
+            pstmt.close();
+            
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du logging de l'action: " + e.getMessage());
+        }
+    }
+    
     // Méthodes de gestion
     public void ouvrir() {
         this.estOuverte = true;
         System.out.println("L'annexe \"" + nom + "\" est maintenant ouverte.");
+        loggerAction("OUVERTURE_ANNEXE", "Ouverture de l'annexe '" + nom + "'", id);
     }
     
     public void fermer() {
         this.estOuverte = false;
         System.out.println("L'annexe \"" + nom + "\" est maintenant fermée.");
+        loggerAction("FERMETURE_ANNEXE", "Fermeture de l'annexe '" + nom + "'", id);
     }
     
     public boolean ajouterLivres(int quantite) {
@@ -96,6 +141,7 @@ public class Annexe {
         nombreLivresActuels += quantite;
         System.out.println(quantite + " livre(s) ajouté(s) à l'annexe \"" + nom + "\".");
         System.out.println("Nouveau total : " + nombreLivresActuels + "/" + capaciteMax);
+        loggerAction("AJOUT_LIVRES", "Ajout de " + quantite + " livres dans l'annexe '" + nom + "'", id);
         return true;
     }
     
@@ -116,6 +162,7 @@ public class Annexe {
         nombreLivresActuels -= quantite;
         System.out.println(quantite + " livre(s) retiré(s) de l'annexe \"" + nom + "\".");
         System.out.println("Nouveau total : " + nombreLivresActuels + "/" + capaciteMax);
+        loggerAction("RETRAIT_LIVRES", "Retrait de " + quantite + " livres de l'annexe '" + nom + "'", id);
         return true;
     }
     
@@ -127,6 +174,7 @@ public class Annexe {
         if (!equipements.contains(equipementTrim)) {
             equipements.add(equipementTrim);
             System.out.println("Équipement \"" + equipementTrim + "\" ajouté à l'annexe \"" + nom + "\".");
+            loggerAction("AJOUT_EQUIPEMENT", "Ajout de l'équipement '" + equipementTrim + "' à l'annexe '" + nom + "'", id);
         } else {
             System.out.println("L'équipement \"" + equipementTrim + "\" est déjà présent dans l'annexe \"" + nom + "\".");
         }
@@ -139,6 +187,7 @@ public class Annexe {
         String equipementTrim = equipement.trim();
         if (equipements.remove(equipementTrim)) {
             System.out.println("Équipement \"" + equipementTrim + "\" retiré de l'annexe \"" + nom + "\".");
+            loggerAction("RETRAIT_EQUIPEMENT", "Retrait de l'équipement '" + equipementTrim + "' de l'annexe '" + nom + "'", id);
         } else {
             System.out.println("L'équipement \"" + equipementTrim + "\" n'existe pas dans l'annexe \"" + nom + "\".");
         }
@@ -190,9 +239,14 @@ public class Annexe {
         Scanner scanner = new Scanner(System.in);
         Annexe annexe = creerExemple();
         
+        // Définir la connexion pour cette classe
+        if (Main.getConnection() != null) {
+            setConnection(Main.getConnection());
+        }
+        
         while (true) {
             System.out.println("\n" + "=".repeat(60));
-            System.out.println("🏛️  MENU GESTION D'ANNEXE");
+            System.out.println("MENU GESTION D'ANNEXE");
             System.out.println("=".repeat(60));
             System.out.println("1. Afficher les informations de l'annexe");
             System.out.println("2. Ajouter des livres");
