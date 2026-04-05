@@ -1,4 +1,3 @@
-
 public class Exemplaire {
     public enum Etat { BON, ABIME, PERDU }
 
